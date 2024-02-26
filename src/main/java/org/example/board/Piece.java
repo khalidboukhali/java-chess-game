@@ -1,27 +1,41 @@
 package org.example.board;
 
-import org.example.exception.*;
+public abstract class Piece implements IPiece{
 
-public abstract class Piece {
-    private final boolean isWeight;
+    private final boolean isWhite;
     private final String name;
+    protected int x;
+    protected int y;
 
-    public Piece(String name, boolean isWeight) {
+    public Piece(String name, int x, int y, boolean isWhite) {
+        this.x = x;
+        this.y = y;
         this.name = name;
-        this.isWeight = isWeight;
+        this.isWhite = isWhite;
     }
 
-    public boolean isWeight() {
-        return isWeight;
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public boolean isWhite() {
+        return isWhite;
     }
 
     public String getName() {
         return name;
     }
 
-    protected abstract boolean isValidMove(Position start, Position end, boolean isCapture, Board board)
-            throws PiecesNotInSameLineException, PiecesNotInSameDiagonalException,
-            NotWithinOneSquareException, CantJumpException, InvalidMoveException;
+    public static boolean isValidPosition(int x, int y) {
+        return x >= 0 && x < Constants.BOARD_SIZE && y >= 0 && y < Constants.BOARD_SIZE;
+    }
+    public static boolean isValidPosition(int[] position) {
+        return position[0] >= 0 && position[0] < Constants.BOARD_SIZE
+                && position[1] >= 0 && position[1] < Constants.BOARD_SIZE;
+    }
 
-    abstract public String toString();
 }

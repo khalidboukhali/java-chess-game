@@ -1,94 +1,77 @@
 import org.example.board.ChessBoard;
-import org.example.board.Position;
-import org.example.exception.CantJumpException;
+import org.example.board.Piece;
+import org.example.exception.PositionOutOfBoundary;
+import org.example.exception.PositionOutOfPieceMovement;
+import org.example.piecesTypes.Pawn;
+import org.example.piecesTypes.Rook;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RookTest {
-    private final ChessBoard chessBoard = new ChessBoard();
-
     @Test
-    void shouldMovesVertically(){
-        chessBoard.initialConditions();
+    void shouldMoveVertically(){
+        Piece whiteRook = new Rook(0,0,true);
+        ChessBoard chessBoard = new ChessBoard(whiteRook);
 
-        Position startPawn = new Position(0,1);
-        Position endPawn = new Position(0,3);
+        chessBoard.move(whiteRook, 0, 7);
 
-        Position startRook = new Position(0,0);
-        Position endRook = new Position(0,2);
-
-        try {
-            chessBoard.play(startPawn, endPawn, false);
-            chessBoard.play(startRook, endRook, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertNull(chessBoard.getPiece(startRook));
-        assertNotNull(chessBoard.getPiece(endRook));
+        assertTrue(chessBoard.isEmpty(0,0));
+        assertFalse(chessBoard.isEmpty(0,7));
     }
 
     @Test
-    void shouldMovesHorizontally(){
-        chessBoard.initialConditions();
+    void shouldMoveHorizontally(){
+        Piece whiteRook = new Rook(0,0,true);
+        ChessBoard chessBoard = new ChessBoard(whiteRook);
 
-        Position startPawn = new Position(0,1);
-        Position endPawn = new Position(0,3);
+        chessBoard.move(whiteRook, 7, 0);
 
-        Position startRookVertical = new Position(0,0);
-        Position endRookVertical = new Position(0,2);
-
-        Position endRookHorizontal = new Position(7,2);
-
-        try {
-            chessBoard.play(startPawn, endPawn, false);
-            chessBoard.play(startRookVertical, endRookVertical, false);
-            chessBoard.play(endRookVertical, endRookHorizontal, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertNull(chessBoard.getPiece(endRookVertical));
-        assertNotNull(chessBoard.getPiece(endRookHorizontal));
+        assertTrue(chessBoard.isEmpty(0,0));
+        assertFalse(chessBoard.isEmpty(7,0));
     }
 
     @Test
-    void shouldNotJump(){
-        chessBoard.initialConditions();
+    void shouldCaptureVertically(){
+        Piece whiteRook = new Rook(0,0,true);
+        Piece capturedPiece = new Pawn(0, 5,false);
+        ChessBoard chessBoard = new ChessBoard(whiteRook, capturedPiece);
 
-        Position start = new Position(0,0);
-        Position end = new Position(0,5);
+        chessBoard.move(whiteRook, 0, 5);
 
-        assertThrows(CantJumpException.class, () -> chessBoard.play(start, end, false));
+        assertTrue(chessBoard.isEmpty(0,0));
+        assertFalse(chessBoard.isEmpty(0,5));
+        assertEquals("Rook", chessBoard.getPiece(0,5).getName());
     }
 
     @Test
-    void shouldCapture(){
-        chessBoard.initialConditions();
+    void shouldCaptureHorizontally(){
+        Piece whiteRook = new Rook(0,0,true);
+        Piece capturedPiece = new Pawn(6, 0,false);
+        ChessBoard chessBoard = new ChessBoard(whiteRook, capturedPiece);
 
-        Position startPawn = new Position(0,1);
-        Position endPawn = new Position(0,3);
+        chessBoard.move(whiteRook, 6, 0);
 
-        Position startRookVertical = new Position(0,0);
-        Position endRookVertical = new Position(0,2);
-
-        Position endRookHorizontal = new Position(7,2);
-
-        Position capturedPiece = new Position(7,6);
-
-        try {
-            chessBoard.play(startPawn, endPawn, false);
-            chessBoard.play(startRookVertical, endRookVertical, false);
-            chessBoard.play(endRookVertical, endRookHorizontal, false);
-            chessBoard.play(endRookHorizontal, capturedPiece, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertTrue(chessBoard.getPiece(capturedPiece).isWeight());
-        assertEquals("Rook", chessBoard.getPiece(capturedPiece).getName());
+        assertTrue(chessBoard.isEmpty(0,0));
+        assertFalse(chessBoard.isEmpty(6,0));
+        assertEquals("Rook", chessBoard.getPiece(6,0).getName());
     }
 
+    @Test
+    void shouldThrowOutOfBoundary(){
+        Piece whiteRook = new Rook(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whiteRook);
+
+        assertThrows(PositionOutOfBoundary.class, () -> chessBoard.move(whiteRook, 1, 8));
+    }
+
+    @Test
+    void shouldThrowOutOfPieceMovement(){
+        Piece whiteRook = new Rook(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whiteRook);
+
+        assertThrows(PositionOutOfPieceMovement.class, () -> chessBoard.move(whiteRook, 1, 3));
+    }
 }
 

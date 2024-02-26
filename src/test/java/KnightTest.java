@@ -1,65 +1,55 @@
 import org.example.board.ChessBoard;
-import org.example.board.Position;
-import org.example.exception.InvalidMoveException;
+import org.example.board.Piece;
+import org.example.exception.PositionOutOfBoundary;
+import org.example.exception.PositionOutOfPieceMovement;
+import org.example.piecesTypes.Bishop;
+import org.example.piecesTypes.Knight;
+import org.example.piecesTypes.Rook;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class KnightTest {
-    private final ChessBoard chessBoard = new ChessBoard();
 
     @Test
-    void shouldJump(){
-        chessBoard.initialConditions();
+    void shouldMove(){
+        Piece whiteKnight = new Knight(2,0,true);
+        ChessBoard chessBoard = new ChessBoard(whiteKnight);
 
-        Position start = new Position(1,0);
-        Position end = new Position(2,2);
+        chessBoard.move(whiteKnight, 1, 2);
 
-        try {
-            chessBoard.play(start, end, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertNull(chessBoard.getPiece(start));
-        assertTrue(chessBoard.getPiece(end).isWeight());
-        assertEquals("Knight", chessBoard.getPiece(end).getName());
+        assertTrue(chessBoard.isEmpty(2,0));
+        assertFalse(chessBoard.isEmpty(1,2));
     }
 
     @Test
     void shouldCapture(){
-        chessBoard.initialConditions();
+        Piece whiteKnight = new Knight(2,0,true);
+        Piece capturedPiece = new Rook(1, 2,false);
+        ChessBoard chessBoard = new ChessBoard(whiteKnight, capturedPiece);
 
-        Position start = new Position(1,0);
-        Position end1 = new Position(2,2);
-        Position end2 = new Position(1,4);
-        Position capturedPiecePosition = new Position(2,6);
+        chessBoard.move(whiteKnight, 1, 2);
 
-        try {
-            chessBoard.play(start, end1, false);
-            chessBoard.play(end1, end2, false);
-            chessBoard.play(end2, capturedPiecePosition, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertNull(chessBoard.getPiece(start));
-        assertNull(chessBoard.getPiece(end1));
-        assertNull(chessBoard.getPiece(end2));
-        assertTrue(chessBoard.getPiece(capturedPiecePosition).isWeight());
-        assertEquals("Knight", chessBoard.getPiece(capturedPiecePosition).getName());
+        assertTrue(chessBoard.isEmpty(2,0));
+        assertFalse(chessBoard.isEmpty(1,2));
+        assertEquals("Knight", chessBoard.getPiece(1,2).getName());
     }
 
-    /**
-     * Verifies that the knight cannot make moves that do not adhere to the L-shape rule.
-     */
     @Test
-    void shouldNotMove(){
-        chessBoard.initialConditions();
+    void shouldThrowOutOfBoundary(){
+        Piece whiteBishop = new Bishop(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whiteBishop);
 
-        Position start = new Position(1,0);
-        Position end = new Position(2,3);
-
-        assertThrows(InvalidMoveException.class, () -> chessBoard.play(start, end, false));
+        assertThrows(PositionOutOfBoundary.class, () -> chessBoard.move(whiteBishop, -1, 3));
     }
+
+    @Test
+    void shouldThrowOutOfPieceMovement(){
+        Piece whiteBishop = new Bishop(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whiteBishop);
+
+        assertThrows(PositionOutOfPieceMovement.class, () -> chessBoard.move(whiteBishop, 1, 5));
+    }
+
 }

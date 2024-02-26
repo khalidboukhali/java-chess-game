@@ -1,29 +1,26 @@
 package org.example.piecesTypes;
 
-import org.example.board.Board;
-import org.example.board.Move;
+import org.example.board.Movement;
 import org.example.board.Piece;
-import org.example.board.Position;
-import org.example.exception.CantJumpException;
-import org.example.exception.PiecesNotInSameDiagonalException;
+
+import java.util.List;
 
 /**
  * Moves diagonally any number of squares.
  */
 public class Bishop extends Piece {
-    public Bishop(boolean isWeight) {
-        super("Bishop", isWeight);
-    }
 
-    public boolean isValidMove(Position start, Position end, boolean isCapture, Board board)
-            throws PiecesNotInSameDiagonalException, CantJumpException {
-
-        return Move.isDiagonalMoveAllowed(start, end, board);
+    public Bishop(int x, int y, boolean isWhite){
+        super("Bishop", x, y, isWhite);
     }
 
     @Override
-    public String toString() {
-        return isWeight() ? "♗" : "♝";
+    public List<int[]> getAllPossiblePositionsToMove() {
+        return Movement.getAllDiagonalMovements(x,y,isWhite());
     }
 
+    @Override
+    public List<int[]> getAllPossiblePositionsToAttack() {
+        return getAllPossiblePositionsToMove();
+    }
 }

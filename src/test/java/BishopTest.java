@@ -1,63 +1,52 @@
 import org.example.board.ChessBoard;
-import org.example.board.Position;
-import org.example.exception.CantJumpException;
-import org.example.exception.PiecesNotInSameDiagonalException;
+import org.example.board.Piece;
+import org.example.exception.PositionOutOfBoundary;
+import org.example.exception.PositionOutOfPieceMovement;
+import org.example.piecesTypes.Bishop;
+import org.example.piecesTypes.Rook;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BishopTest {
-    private final ChessBoard chessBoard = new ChessBoard();
-
     @Test
-    void shouldNotJump(){
-        chessBoard.initialConditions();
+    void shouldMove(){
+        Piece whiteBishop = new Bishop(2,0,true);
+        ChessBoard chessBoard = new ChessBoard(whiteBishop);
 
-        Position start = new Position(2,0);
-        Position end = new Position(4,2);
+        chessBoard.move(whiteBishop, 4, 2);
 
-        assertThrows(CantJumpException.class, () -> chessBoard.play(start, end, false));
+        assertTrue(chessBoard.isEmpty(2,0));
+        assertFalse(chessBoard.isEmpty(4,2));
     }
 
     @Test
     void shouldCapture(){
-        chessBoard.initialConditions();
+        Piece whiteBishop = new Bishop(2,0,true);
+        Piece capturedPiece = new Rook(4, 2,false);
+        ChessBoard chessBoard = new ChessBoard(whiteBishop, capturedPiece);
 
-        Position startWeightPawn = new Position(3,1);
-        Position endWeightPawn = new Position(3,2);
+        chessBoard.move(whiteBishop, 4, 2);
 
-        Position startBlackPawnCaptured = new Position(7,6);
-        Position endBlackPawnCaptured = new Position(7,5);
-
-        Position bishopStart = new Position(2,0);
-
-        try {
-            chessBoard.play(startWeightPawn, endWeightPawn, false);
-            chessBoard.play(startBlackPawnCaptured, endBlackPawnCaptured, true);
-            chessBoard.play(bishopStart, endBlackPawnCaptured, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertNull(chessBoard.getPiece(bishopStart));
-        assertEquals("Bishop", chessBoard.getPiece(endBlackPawnCaptured).getName());
-        assertTrue(chessBoard.getPiece(endBlackPawnCaptured).isWeight());
+        assertTrue(chessBoard.isEmpty(2,0));
+        assertFalse(chessBoard.isEmpty(4,2));
+        assertEquals("Bishop", chessBoard.getPiece(4,2).getName());
     }
 
     @Test
-    void piecesNotWithinDiagonal(){
-        chessBoard.initialConditions();
+    void shouldThrowOutOfBoundary(){
+        Piece whiteBishop = new Bishop(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whiteBishop);
 
-        Position startPawn = new Position(2,1);
-        Position endPawn = new Position(2,3);
-        Position bishopStart = new Position(2,0);
+        assertThrows(PositionOutOfBoundary.class, () -> chessBoard.move(whiteBishop, -1, 3));
+    }
 
-        try {
-            chessBoard.play(startPawn, endPawn, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
+    @Test
+    void shouldThrowOutOfPieceMovement(){
+        Piece whiteBishop = new Bishop(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whiteBishop);
 
-        assertThrows(PiecesNotInSameDiagonalException.class, () -> chessBoard.play(bishopStart, startPawn, false));
+        assertThrows(PositionOutOfPieceMovement.class, () -> chessBoard.move(whiteBishop, 1, 3));
     }
 }

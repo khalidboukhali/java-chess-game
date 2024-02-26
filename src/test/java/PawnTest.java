@@ -1,96 +1,62 @@
 import org.example.board.ChessBoard;
-import org.example.board.Position;
-import org.example.exception.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.example.board.Piece;
+import org.example.exception.PositionOutOfBoundary;
+import org.example.exception.PositionOutOfPieceMovement;
+import org.example.piecesTypes.Pawn;
+import org.example.piecesTypes.Rook;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class PawnTest {
-    private final ChessBoard chessBoard = new ChessBoard();
-
     @Test
-    void shouldMovesForwardOneSquare(){
-        chessBoard.initialConditions();
+    void shouldMoveOneSquareForward(){
+        Piece whitePawn = new Pawn(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whitePawn);
 
-        Position start = new Position(0,1);
-        Position end = new Position(0,2);
+        chessBoard.move(whitePawn, 0, 2);
 
-        try {
-            chessBoard.play(start, end, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertNull(chessBoard.getPiece(start));
-        assertNotNull(chessBoard.getPiece(end));
+        assertTrue(chessBoard.isEmpty(0,1));
+        assertFalse(chessBoard.isEmpty(0,2));
     }
 
     @Test
-    void shouldMovesForwardTwoSquareFirstTime(){
-        chessBoard.initialConditions();
+    void shouldMoveTwoSquareForward(){
+        Piece whitePawn = new Pawn(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whitePawn);
 
-        Position start = new Position(0,1);
-        Position end = new Position(0,3);
+        chessBoard.move(whitePawn, 0, 3);
 
-        try {
-            chessBoard.play(start, end, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertNull(chessBoard.getPiece(start));
-        assertNotNull(chessBoard.getPiece(end));
+        assertTrue(chessBoard.isEmpty(0,1));
+        assertFalse(chessBoard.isEmpty(0,3));
     }
 
     @Test
-    void shouldNotMovesForwardTwoSquare(){
-        chessBoard.initialConditions();
+    void shouldCapture(){
+        Piece whitePawn = new Pawn(0,1,true);
+        Piece capturedPiece = new Rook(1, 2,false);
+        ChessBoard chessBoard = new ChessBoard(whitePawn, capturedPiece);
 
-        Position start1 = new Position(0,1);
-        Position end1 = new Position(0,2);
+        chessBoard.move(whitePawn, 1, 2);
 
-        try {
-            chessBoard.play(start1, end1, false); // first move
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        Position start2 = new Position(0,2);
-        Position end2 = new Position(0,4);
-
-        assertThrows(InvalidMoveException.class, () -> {
-            chessBoard.play(start2, end2, false); // second move
-        });
+        assertTrue(chessBoard.isEmpty(0,1));
+        assertFalse(chessBoard.isEmpty(1,2));
+        assertEquals("Pawn", chessBoard.getPiece(1,2).getName());
     }
 
     @Test
-    void shouldNotMovesBack(){
-        chessBoard.initialConditions();
+    void shouldThrowOutOfBoundary(){
+        Piece whitePawn = new Pawn(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whitePawn);
 
-        Position start = new Position(0,1);
-        Position end = new Position(0,0);
-
-        assertThrows(InvalidMoveException.class, () -> chessBoard.play(start, end, false));
+        assertThrows(PositionOutOfBoundary.class, () -> chessBoard.move(whitePawn, -1, 3));
     }
 
     @Test
-    void shouldCapturesDiagonallyPiece(){
-        chessBoard.initialConditions();
+    void shouldThrowOutOfPieceMovement(){
+        Piece whitePawn = new Pawn(0,1,true);
+        ChessBoard chessBoard = new ChessBoard(whitePawn);
 
-        Position start = new Position(0,1);
-        Position end = new Position(0,3);
-
-        Position capturedStart = new Position(1,6);
-        Position capturedEnd = new Position(1,4);
-
-        try {
-            chessBoard.play(start, end, false);
-            chessBoard.play(capturedStart, capturedEnd, true);
-            chessBoard.play(end, capturedEnd, false);
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getMessage());
-        }
-
-        assertTrue(chessBoard.getPiece(capturedEnd).isWeight());
-        assertEquals("Pawn", chessBoard.getPiece(capturedEnd).getName());
+        assertThrows(PositionOutOfPieceMovement.class, () -> chessBoard.move(whitePawn, 1, 3));
     }
 }

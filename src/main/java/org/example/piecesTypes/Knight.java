@@ -1,8 +1,6 @@
 package org.example.piecesTypes;
 
-import org.example.board.Board;
 import org.example.board.Piece;
-import org.example.board.Position;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,24 +13,23 @@ public class Knight extends Piece {
 
     private static final int[] DX = {2, 1, -1, -2, -2, -1, 1, 2};
     private static final int[] DY = {-1, -2, -2, -1, 1, 2, 2, 1};
-    public Knight(boolean isWeight) {
-        super("Knight", isWeight);
+    public Knight(int x, int y, boolean isWhite) {
+        super("Knight", x, y, isWhite);
     }
 
-    public boolean isValidMove(Position start, Position end, boolean isCapture, Board board){
-        List<Position> validPositionToMove = getAllPossibleMovements(start);
-        return validPositionToMove.stream().anyMatch(position -> position.equals(end));
-    }
-
-    private List<Position> getAllPossibleMovements(Position position) {
+    @Override
+    public List<int[]> getAllPossiblePositionsToMove() {
         return IntStream.range(0, DX.length)
-                .mapToObj(i -> position.move(DX[i], DY[i]))
-                .filter(Position::isValidPosition)
+                .mapToObj(i -> {
+                    int[] position = {x + DX[i], y + DY[i]};
+                    return position;
+                }).filter(position -> isValidPosition(position))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public String toString() {
-        return isWeight() ? "♘" : "♞";
+    public List<int[]> getAllPossiblePositionsToAttack() {
+        return getAllPossiblePositionsToMove();
     }
+
 }
