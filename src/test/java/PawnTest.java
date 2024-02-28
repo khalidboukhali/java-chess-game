@@ -1,5 +1,6 @@
 import org.example.board.ChessBoard;
 import org.example.board.Piece;
+import org.example.exception.CantJumpException;
 import org.example.exception.PositionOutOfBoundary;
 import org.example.exception.PositionOutOfPieceMovement;
 import org.example.piecesTypes.Pawn;
@@ -58,5 +59,14 @@ public class PawnTest {
         ChessBoard chessBoard = new ChessBoard(whitePawn);
 
         assertThrows(PositionOutOfPieceMovement.class, () -> chessBoard.move(whitePawn, 1, 3));
+    }
+
+    @Test
+    void shouldThrowCantJumpException(){
+        Piece whitePawn = new Pawn(0,1,true);
+        Piece blackPawn = new Pawn(0,2,true);
+        ChessBoard chessBoard = new ChessBoard(whitePawn, blackPawn);
+
+        assertThrows(CantJumpException.class, () -> chessBoard.move(whitePawn, 0, 3));
     }
 }

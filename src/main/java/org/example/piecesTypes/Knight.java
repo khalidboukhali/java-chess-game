@@ -20,10 +20,8 @@ public class Knight extends Piece {
     @Override
     public List<int[]> getAllPossiblePositionsToMove() {
         return IntStream.range(0, DX.length)
-                .mapToObj(i -> {
-                    int[] position = {x + DX[i], y + DY[i]};
-                    return position;
-                }).filter(position -> isValidPosition(position))
+                .mapToObj(i -> new int[]{x + DX[i], y + DY[i]})
+                .filter(position -> isValidPosition(position))
                 .collect(Collectors.toList());
     }
 

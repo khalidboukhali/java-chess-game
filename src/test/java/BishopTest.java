@@ -1,8 +1,10 @@
 import org.example.board.ChessBoard;
 import org.example.board.Piece;
+import org.example.exception.CantJumpException;
 import org.example.exception.PositionOutOfBoundary;
 import org.example.exception.PositionOutOfPieceMovement;
 import org.example.piecesTypes.Bishop;
+import org.example.piecesTypes.Pawn;
 import org.example.piecesTypes.Rook;
 import org.junit.jupiter.api.Test;
 
@@ -48,5 +50,14 @@ public class BishopTest {
         ChessBoard chessBoard = new ChessBoard(whiteBishop);
 
         assertThrows(PositionOutOfPieceMovement.class, () -> chessBoard.move(whiteBishop, 1, 3));
+    }
+
+    @Test
+    void shouldThrowCantJumpException(){
+        Piece whiteBishop = new Bishop(1,0,true);
+        Piece blackPawn = new Pawn(6,5,false);
+        ChessBoard chessBoard = new ChessBoard(whiteBishop, blackPawn);
+
+        assertThrows(CantJumpException.class, () -> chessBoard.move(whiteBishop, 7, 6));
     }
 }

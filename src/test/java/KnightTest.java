@@ -4,6 +4,7 @@ import org.example.exception.PositionOutOfBoundary;
 import org.example.exception.PositionOutOfPieceMovement;
 import org.example.piecesTypes.Bishop;
 import org.example.piecesTypes.Knight;
+import org.example.piecesTypes.Pawn;
 import org.example.piecesTypes.Rook;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,19 @@ public class KnightTest {
     void shouldMove(){
         Piece whiteKnight = new Knight(2,0,true);
         ChessBoard chessBoard = new ChessBoard(whiteKnight);
+
+        chessBoard.move(whiteKnight, 1, 2);
+
+        assertTrue(chessBoard.isEmpty(2,0));
+        assertFalse(chessBoard.isEmpty(1,2));
+    }
+
+    @Test
+    void shouldJump(){
+        Piece whiteKnight = new Knight(2,0,true);
+        Piece whitePawn1 = new Pawn(2,1,true);
+        Piece whitePawn2 = new Pawn(2,2,true);
+        ChessBoard chessBoard = new ChessBoard(whiteKnight, whitePawn1, whitePawn2);
 
         chessBoard.move(whiteKnight, 1, 2);
 

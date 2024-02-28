@@ -2,9 +2,7 @@ import org.example.board.ChessBoard;
 import org.example.board.Piece;
 import org.example.exception.PositionOutOfBoundary;
 import org.example.exception.PositionOutOfPieceMovement;
-import org.example.piecesTypes.Bishop;
 import org.example.piecesTypes.King;
-import org.example.piecesTypes.Knight;
 import org.example.piecesTypes.Rook;
 import org.junit.jupiter.api.Test;
 
